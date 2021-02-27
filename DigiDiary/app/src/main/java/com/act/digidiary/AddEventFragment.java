@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,7 +30,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AddEventFragment extends Fragment {
 
-    private EditText editTextEvent;
+    private TextInputLayout editTextEvent;
     private TextView textViewDate;
     private Button addEvent;
     private SQLiteDatabase database;
@@ -62,7 +65,7 @@ public class AddEventFragment extends Fragment {
         addEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItem(editTextEvent.getText().toString());
+                addItem(editTextEvent.getEditText().getText().toString());
             }
         });
     }
@@ -79,18 +82,13 @@ public class AddEventFragment extends Fragment {
     }
 
     private void addItem(String item) {
-        if (item.isEmpty()){
+        if (item.replace(" ", "").isEmpty()){
             Toast.makeText(getActivity(), "Please make sure the text field is not blank.", Toast.LENGTH_SHORT).show();
             return;
         }
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-
-        if (loadData("Date", getActivity()).equals(date)){
-            addItemDateText = "";
-        } else{
-            saveData("Date", date, getContext());
-        }
+        addItemDateText = "";
 
         ContentValues contentValues = new ContentValues();
         //Adding the event to the db
@@ -101,6 +99,21 @@ public class AddEventFragment extends Fragment {
         ((MainActivity) getActivity()).adapter.swapCursor(getAllItems());
         //Inserting all the items into a row in the db
         database.insert(Event.EventEntry.TABLE_NAME, null, contentValues);
+
+        if (loadData("Date", getActivity()).equals(date)){
+            Log.d("Detect Date", "Date checked");
+        } else{
+            saveData("Date", date, getContext());
+            ContentValues contentValues2 = new ContentValues();
+            //Adding the event to the db
+            contentValues2.put(Event.EventEntry.COLUMN_EVENT, "");
+            //Adding the time to the db
+            contentValues2.put(Event.EventEntry.COLUMN_DATE, date);
+            //Notifying the adapter that the database has new values
+            ((MainActivity) getActivity()).adapter.swapCursor(getAllItems());
+            //Inserting all the items into a row in the db
+            database.insert(Event.EventEntry.TABLE_NAME, null, contentValues2);
+        }
     }
 
     private Cursor getAllItems(){

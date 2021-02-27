@@ -2,6 +2,8 @@ package com.act.digidiary;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +51,18 @@ public class EventRecyclerviewAdapter extends RecyclerView.Adapter<EventRecycler
 
         String event = mCursor.getString(mCursor.getColumnIndex(Event.EventEntry.COLUMN_EVENT));
         String date = mCursor.getString(mCursor.getColumnIndex(Event.EventEntry.COLUMN_DATE));
+
+        if (event.isEmpty()){
+            holder.dateText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            holder.eventText.setVisibility(View.GONE);
+            holder.dateText.setTypeface(Typeface.DEFAULT_BOLD);
+            holder.dateText.setTextSize(20);
+        } else{
+            holder.dateText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            holder.eventText.setVisibility(View.VISIBLE);
+            holder.dateText.setTypeface(Typeface.DEFAULT);
+            holder.dateText.setTextSize(16);
+        }
 
         holder.eventText.setText(event);
         holder.dateText.setText(date);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:drawable="@drawable/ic_outline_menu_book_24"/>
+    <item android:drawable="@drawable/ic_outline_person_24"
+        android:gravity="left|center"
+        android:width="13dp"
+        android:height="13dp"/>
+</layer-list>

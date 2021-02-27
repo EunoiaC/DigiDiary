@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/yourDiary"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/icon_for_owen"
         android:title="Your Diary"
         app:showAsAction="ifRoom" />
 
