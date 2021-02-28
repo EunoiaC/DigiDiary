@@ -73,6 +73,7 @@ public class AddEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 addItem(editTextEvent.getEditText().getText().toString());
+                editTextEvent.getEditText().setText("");
             }
         });
     }
