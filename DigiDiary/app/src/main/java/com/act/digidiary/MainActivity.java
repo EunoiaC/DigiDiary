@@ -1,22 +1,28 @@
 package com.act.digidiary;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LifecycleObserver {
 
@@ -24,9 +30,11 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
     public EventRecyclerviewAdapter adapter;
     AddEventFragment addEventFragment;
     ViewEventsFragment viewEventsFragment;
+    ViewBucketListFragment viewBucketListFragment;
     private EventDBHelper eventDBHelper;
+    Button viewDiary, viewBucketList;
+    FloatingActionButton addEvent;
     FragmentContainerView fragmentContainerView;
-    BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,36 +43,40 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
 
         initializeViewEventsFragment();
 
-        //TODO: Migrate Recyclerview adapter to eventsvieew fragment
-
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
-        navigationView = findViewById(R.id.bottomAppBar);
         addEventFragment = new AddEventFragment();
         viewEventsFragment = new ViewEventsFragment();
+        viewBucketListFragment = new ViewBucketListFragment();
         fragmentContainerView = findViewById(R.id.fragmentContainer);
+        viewDiary = findViewById(R.id.viewDiary);
+        addEvent = findViewById(R.id.addEventBtn);
+        viewBucketList = findViewById(R.id.viewBucketList);
 
-        getSupportFragmentManager().beginTransaction().add(fragmentContainerView.getId(), addEventFragment).add(fragmentContainerView.getId(), viewEventsFragment).hide(viewEventsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(fragmentContainerView.getId(), addEventFragment).add(fragmentContainerView.getId(), viewEventsFragment).add(fragmentContainerView.getId(), viewBucketListFragment).hide(viewBucketListFragment).hide(viewEventsFragment).commit();
 
         adapter = new EventRecyclerviewAdapter(this, getAllItems());
 
-        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        viewDiary.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.yourDiary:
-                        getSupportFragmentManager().beginTransaction().show(viewEventsFragment).commit();
-                        getSupportFragmentManager().beginTransaction().hide(addEventFragment).commit();
-                        return true;
-                    case R.id.addEventItem:
-                        getSupportFragmentManager().beginTransaction().show(addEventFragment).commit();
-                        getSupportFragmentManager().beginTransaction().hide(viewEventsFragment).commit();
-                        return true;
-                }
-                return false;
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction().hide(addEventFragment).hide(viewBucketListFragment).show(viewEventsFragment).commit();
             }
         });
 
+        addEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction().hide(viewEventsFragment).hide(viewBucketListFragment).show(addEventFragment).commit();
+            }
+        });
+
+        viewBucketList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction().hide(viewEventsFragment).show(viewBucketListFragment).hide(addEventFragment).commit();
+            }
+        });
     }
 
     private void initializeViewEventsFragment(){

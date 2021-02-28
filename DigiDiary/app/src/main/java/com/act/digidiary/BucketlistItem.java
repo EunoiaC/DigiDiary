@@ -12,7 +12,7 @@ public class BucketlistItem{
         this.id = id;
     }
 
-    public void isCompleted(Boolean b){
+    public void setIsCompleted(Boolean b){
         isCompleted = b;
     }
 }
