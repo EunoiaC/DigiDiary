@@ -186,7 +186,7 @@ public class AddEventFragment extends Fragment {
         String json = prefs.getString("Challenge", "");
         try {
             JSONObject jsonObject = new JSONObject(json);
-            title.setText("Challenge of the day: \n" + jsonObject.getString("type"));
+            title.setText("Challenge of the day: \n" + "(" + jsonObject.getString("type") + ")");
             desc.setText(jsonObject.getString("activity"));
             Log.d("Key", "loadChallenge: " + jsonObject.getString("key"));
             link.setText(jsonObject.getString("link"));
