@@ -185,12 +185,11 @@ public class AddEventFragment extends Fragment {
         String json = prefs.getString("Challenge", "");
         try {
             JSONObject jsonObject = new JSONObject(json);
-            title.setText("Challenge: " + jsonObject.getString("type"));
+            title.setText("Challenge of the day: \n" + jsonObject.getString("type"));
             desc.setText(jsonObject.getString("activity"));
-            if (jsonObject.getString("link").isEmpty()){
-                link.setVisibility(View.VISIBLE);
-                link.setText(jsonObject.getString("link"));
-            } else {
+            Log.d("Key", "loadChallenge: " + jsonObject.getString("key"));
+            link.setText(jsonObject.getString("link"));
+            if (link.getText().toString().equals("Link")){
                 link.setVisibility(View.GONE);
             }
         } catch (JSONException e) {
