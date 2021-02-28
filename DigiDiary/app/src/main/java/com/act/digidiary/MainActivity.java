@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         viewDiary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActionBar().setTitle("All events");
                 getSupportFragmentManager().beginTransaction().hide(addEventFragment).hide(viewBucketListFragment).show(viewEventsFragment).commit();
             }
         });
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         addEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActionBar().setTitle("DigiDiary");
                 getSupportFragmentManager().beginTransaction().hide(viewEventsFragment).hide(viewBucketListFragment).show(addEventFragment).commit();
             }
         });
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         viewBucketList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActionBar().setTitle("Bucketlist");
                 getSupportFragmentManager().beginTransaction().hide(viewEventsFragment).show(viewBucketListFragment).hide(addEventFragment).commit();
             }
         });
