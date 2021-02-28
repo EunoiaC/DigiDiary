@@ -62,9 +62,21 @@ public class ViewBucketListFragment extends Fragment {
                 final EditText input = new EditText(getActivity());
                 alert.setView(input);
 
+                int size = 0;
+                try {
+                    size = getArrayList("Bucketlist").size();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                final int finalSize = size;
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        addItemToArrayList(new BucketlistItem(input.getText().toString(), false, getArrayList("Bucketlist").size()));
+                        if (input.getText().toString().replace(" ", "").isEmpty()){
+                            Toast.makeText(getActivity(), "That input cannot be empty", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        addItemToArrayList(new BucketlistItem(input.getText().toString(), false, finalSize));
                         adapter = new BucketlistItemRecyclerviewAdapter(getActivity(), getArrayList("Bucketlist"));
                         r.setAdapter(adapter);
                     }
@@ -84,6 +96,9 @@ public class ViewBucketListFragment extends Fragment {
     public void addItemToArrayList(BucketlistItem item){
         ArrayList<BucketlistItem> items;
         items = getArrayList("Bucketlist");
+        if (items == null){
+            items = new ArrayList<>();
+        }
         items.add(item);
         saveArrayList(items, "Bucketlist");
     }

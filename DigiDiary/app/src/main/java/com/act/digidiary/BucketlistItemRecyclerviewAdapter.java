@@ -54,7 +54,12 @@ public class BucketlistItemRecyclerviewAdapter extends RecyclerView.Adapter<Buck
 
     @Override
     public int getItemCount() {
-        return bucketlistItems.size();
+        try {
+            return bucketlistItems.size();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public class BucketlistItemViewHolder extends RecyclerView.ViewHolder{

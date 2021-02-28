@@ -6,24 +6,33 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -38,8 +47,6 @@ public class AddEventFragment extends Fragment {
     String addItemDateText;
     private static final String SHARED_PREFS = "sharedPrefs";
     String date;
-
-    //TODO: Add time the event was added, eg 10:17, 9:41
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,6 +82,34 @@ public class AddEventFragment extends Fragment {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         date = dateFormat.format(calendar.getTime());
         addItemDateText = date + " at ";
+
+        if (loadData("ChallengeDate", getActivity()).equals(date)){
+            Log.d("Detect Date", "Date checked");
+            loadChallenge();
+        } else{
+            saveData("ChallengeDate", date, getActivity());
+            RequestQueue queue = Volley.newRequestQueue(getActivity());
+            String url ="https://www.boredapi.com/api/activity?participants=1";
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("Challenge", response);
+                            editor.apply();
+                            loadChallenge();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+
+            queue.add(stringRequest);
+        }
 
         //TODO: Add a shared preferences for date, and detect if date string matches the shared preferences one, if not change the shared preferences to match the current date
 
@@ -139,5 +174,28 @@ public class AddEventFragment extends Fragment {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         String text = sharedPreferences.getString(key, "");
         return text;
+    }
+
+    public void loadChallenge(){
+        TextView title, desc, link;
+        title = getView().findViewById(R.id.challengeTitle);
+        desc = getView().findViewById(R.id.challengeDesc);
+        link = getView().findViewById(R.id.challengeLink);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String json = prefs.getString("Challenge", "");
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            title.setText("Challenge: " + jsonObject.getString("type"));
+            desc.setText(jsonObject.getString("activity"));
+            if (jsonObject.getString("link").isEmpty()){
+                link.setVisibility(View.VISIBLE);
+                link.setText(jsonObject.getString("link"));
+            } else {
+                link.setVisibility(View.GONE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 }
